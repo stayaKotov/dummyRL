@@ -4,7 +4,7 @@ import tqdm
 import numpy as np
 
 
-class Playground():
+class Playground:
     def __init__(
             self,
             episodes=500,
@@ -65,9 +65,7 @@ class Playground():
         return states
 
 
-if __name__ == "__main__":
-    rows = 10
-    cols = 10
+def run_playground(rows=14, cols=12, terminal=None, obstacles=None):
     agent = Agent(
         x=None, y=None,
         bound_x=cols-1,
@@ -76,12 +74,12 @@ if __name__ == "__main__":
     env = Environement(
         agent,
         init_state=(0, 0),
-        terminal_state=f'{rows-1}|{cols-1}',
+        terminal_state=f'{terminal[0]}|{terminal[1]}',
         step_reward=-1,
         final_reward=100,
         field_row=rows,
         field_cols=cols,
-        obstacles=[((3, 4), (3, 8), (8, 4), (8, 8)),]
+        obstacles=obstacles
     )
     pg = Playground(
         episodes=1000,
@@ -94,6 +92,14 @@ if __name__ == "__main__":
     pg.play()
 
     states = pg.create_episode()
+    return states, pg
+
+
+if __name__ == "__main__":
+    rows = 14
+    cols = 12
+    states, pg = run_playground(rows, cols, np.asarray([rows-1, cols-1]), obstacles=None)
+
     print(len(states))
     print(states)
 
@@ -108,4 +114,3 @@ if __name__ == "__main__":
         print(st)
         print()
 
-    # print(states)

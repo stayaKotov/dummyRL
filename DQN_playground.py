@@ -13,8 +13,6 @@ class DQN_Playground():
             gamma=0.3,
             lr=1e-2,
             copy_step=25,
-            # train_net: DQN = None,
-            # target_net: DQN = None,
             num_states=4,
             env: DQNEnvironement = None,
             num_actions=4,
@@ -30,8 +28,8 @@ class DQN_Playground():
         self.epsilon = epsilon
         self.gamma = gamma
         self.lr = lr
-        self.train_net = None#train_net
-        self.target_net = None#target_net
+        self.train_net = None
+        self.target_net = None
 
         self.copy_step = copy_step
         self.num_states = num_states
@@ -55,7 +53,7 @@ class DQN_Playground():
             prev_state = state
             state, reward, is_done = self.env.step(action)
 
-            if is_done:# and self.isdone is False:
+            if is_done:
                 print('DONE', self.limit - n)
                 # self.isdone = True
 
@@ -136,14 +134,14 @@ class DQN_Playground():
             #     tf.summary.scalar('running avg reward(100)', avg_rewards, step=n)
             #     tf.summary.scalar('average loss)', losses, step=n)
             if n % 10 == 0 and n > 0:
-                pass
+                # pass
                 # print()
                 # print(self.check_q_values())
                 # print()
-                # print(
-                #     "episode:", n, "episode reward:", total_reward, "eps:", epsilon, "avg reward (last 100):",
-                #       avg_rewards, "episode loss: ", losses
-                # )
+                print(
+                    "episode:", n, "episode reward:", total_reward, "eps:", epsilon, "avg reward (last 10):",
+                      avg_rewards, "episode loss: ", losses
+                )
         # print("avg reward for last 100 episodes:", avg_rewards)
         # env.close()
 
@@ -160,10 +158,7 @@ class DQN_Playground():
         return fields
 
 
-if __name__ == "__main__":
-    rows = 10
-    cols = 10
-    terminal = np.asarray([rows-1, cols-1])
+def run_DQN_playground(rows=14, cols=12, terminal=None, obstacles=None):
 
     env = DQNEnvironement(
         init_state=np.asarray([0, 0]),
@@ -172,25 +167,33 @@ if __name__ == "__main__":
         final_reward=100,
         bound_x=cols-1,
         bound_y=rows-1,
-        obstacles=None
+        obstacles=obstacles
     )
     pg = DQN_Playground(
-        episodes=30,
-        limit=150,
-        epsilon=0.3,
-        gamma=0.8,
+        episodes=1000,
+        limit=300,
+        epsilon=0.5,
+        gamma=0.99,
         lr=1e-2,
         copy_step=25,
         num_states=4,
         env=env,
         num_actions=4,
-        hidden_units=[30, 30],
-        max_experiences=300,
+        hidden_units=[20, 20, 20],
+        max_experiences=700,
         min_experiences=100,
-        batch_size=32,
+        batch_size=64,
     )
     pg.learning()
 
     print(pg.check_q_values(terminal))
+    states, _ = pg.get_episode()
+    print(states[:5])
+    states = [st[:2] for st in states]
+    return states, _
 
-    print(pg.get_episode())
+
+if __name__ == "__main__":
+    rows = 14
+    cols = 12
+    states, _ = run_DQN_playground(rows=rows, cols=cols, terminal=np.asarray([rows-1, cols-1]), obstacles=None)

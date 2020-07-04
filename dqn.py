@@ -9,6 +9,8 @@ class DQN_Agent(tf.keras.Model):
         self.hiidens = []
         for units in hidden_units:
             layer = tf.keras.layers.Dense(units, activation='relu', kernel_initializer='GlorotNormal')
+            # bn = tf.keras.layers.BatchNormalization()
+            # do = tf.keras.layers.Dropout(0.2)
             self.hiidens.append(layer)
 
         self.output_layer = tf.keras.layers.Dense(actions_n, activation='linear', kernel_initializer='RandomNormal')
@@ -18,6 +20,8 @@ class DQN_Agent(tf.keras.Model):
         z = self.input_layer(inputs)
         for layer in self.hiidens:
             z = layer(z)
+            # z = bn(z)
+            # z = do(z)
         return self.output_layer(z)
 
 
@@ -47,7 +51,8 @@ class DQN:
         self.experience = {'s': [], 'a': [], 'r': [], 's2': [], 'done': []}
 
     def predict(self, inputs):
-        return self.model(np.atleast_2d(inputs.astype('float32')))
+        vals = np.atleast_2d((inputs/12).astype('float32'))
+        return self.model(vals)
 
     def train(self, TargetNet):
         if len(self.experience['s']) < self.min_experiences:
