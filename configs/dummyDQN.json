@@ -1,0 +1,30 @@
+{
+      "global_params": {
+      "rows": 15,
+      "cols": 15
+      },
+      "DQNEnvironement": {
+            "init_state":[0, 0],
+            "terminal_state": [7,7],
+            "step_reward":-1,
+            "final_reward":100,
+            "bound_x":14,
+            "bound_y":14,
+            "obstacles": [[[2, 3], [2, 10], [5, 3], [5, 10]], [[9, 3], [9, 10], [12, 3], [12, 10]]]
+      },
+      "DQN_Playground": {
+            "episodes":200,
+            "limit":250,
+            "epsilon":0.6,
+            "gamma":0.6,
+            "lr":1e-2,
+            "copy_step":64,
+            "num_states":2,
+            "num_actions":4,
+            "hidden_units":[15, 15],
+            "max_experiences":700,
+            "min_experiences":64,
+            "batch_size":64,
+            "terminal_state": [7,7]
+      }
+}

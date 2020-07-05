@@ -1,16 +1,31 @@
 import pygame
 from playground import run_playground
 import numpy as np
+import json
 from DQN_playground import run_DQN_playground
+import pprint
 
 
 def main():
-    #
-    obstacles = [((0, 2), (0, 4), (5, 2), (5, 4)), ((3, 7), (3, 9), (12, 7), (12, 9))]
-    rows = 12
-    cols = 12
-    terminal = np.asarray([rows - 1, cols - 1])
-    states, _ = run_DQN_playground(rows, cols, terminal=terminal, obstacles=obstacles)
+    # [[[0, 2], [0, 4], [5, 2], [5, 4]], [[3, 7], [3, 9], [12, 7], [12, 9]]]
+#[[[2, 3], [2, 10], [5, 3], [5, 10]], [[9, 3], [9, 10], [12, 3], [12, 10]]]
+    with open('./configs/dummyDQN.json') as f:
+        params = json.load(f)
+
+    obstacles = params["DQNEnvironement"]["obstacles"]
+    if obstacles == "empty":
+        params["DQNEnvironement"]["obstacles"] = None
+
+    params["DQNEnvironement"]["init_state"] = np.asarray(params["DQNEnvironement"]["init_state"])
+    params["DQNEnvironement"]["terminal_state"] = np.asarray(params["DQNEnvironement"]["terminal_state"])
+
+    rows = params["global_params"]["rows"]
+    cols = params["global_params"]["cols"]
+    obstacles = params["DQNEnvironement"]["obstacles"]
+
+    # pprint.pprint(params)
+
+    states, _ = run_DQN_playground(params)
     print(len(states))
 
     pygame.init()

@@ -22,13 +22,16 @@ class DQNEnvironement:
         self.tuple = self.reset()
         self.y, self.x = self.tuple[0], self.tuple[1]
 
-    def reset(self, use_random=False):
+    def reset(self, use_random=True):
         if not use_random:
             tmp = self.init_state
         else:
-            tmp = np.asaray([np.random.choice(15), np.random.choice(2)])
+            xx = [0,1,2, 11,12,13]
+            yy = range(13)
+            tmp = np.asarray([np.random.choice(yy), np.random.choice(xx)])
         self.tuple = np.hstack([tmp, self.terminal_state])
         self.y, self.x = self.tuple[0], self.tuple[1]
+        print(self.tuple)
         return self.tuple
 
     def check_boundaries(self, y, x):
@@ -36,18 +39,7 @@ class DQNEnvironement:
         if 0 <= x < self.bound_x and 0 <= y < self.bound_y:
             return y, x, out_bound
         else:
-            if x < 0:
-                x = 0
-            elif x > self.bound_x:
-                out_bound = True
-                x = self.bound_x
-
-            if y < 0:
-                y = 0
-            elif y > self.bound_y:
-                out_bound = True
-                y = self.bound_y
-        return y, x, out_bound
+            return y, x, True
 
     def check_obstacles(self, y, x, cur_y, cur_x):
         in_obstacle = False
@@ -60,6 +52,12 @@ class DQNEnvironement:
                 y = cur_y
                 in_obstacle = True
         return y, x, in_obstacle
+
+    def set_state(self,new_y, new_x):
+        self.y = new_y
+        self.x = new_x
+        self.tuple = np.asarray([self.y, self.x])
+        self.tuple = np.hstack([self.tuple, self.terminal_state])
 
     def step(self, action):
         self.y, self.x = self.tuple[0], self.tuple[1]
@@ -82,18 +80,25 @@ class DQNEnvironement:
 
         reward, is_done = self.__get_reward()
         if is_out_bound:
-            reward = -20
+            reward = -30
         if is_in_obst:
-            reward = -20
+            reward = -30
 
         self.tuple = np.asarray([self.y, self.x])
         self.tuple = np.hstack([self.tuple, self.terminal_state])
 
-        return self.tuple, reward, is_done
+        if is_out_bound or is_in_obst:
+            bad_pos = True
+        else:
+            bad_pos = False
+
+        return self.tuple, reward, is_done, bad_pos
 
     def __get_reward(self):
         finish_y, finish_x = self.terminal_state[0], self.terminal_state[1]
         if (self.y, self.x) == (finish_y, finish_x):
             return self.final_reward, True
         else:
+            # d = 1/np.sqrt((self.y - finish_y)**2+(self.x - finish_x)**2)
+            # return d*self.final_reward, False
             return self.step_reward, False

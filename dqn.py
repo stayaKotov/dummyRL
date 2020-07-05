@@ -51,7 +51,7 @@ class DQN:
         self.experience = {'s': [], 'a': [], 'r': [], 's2': [], 'done': []}
 
     def predict(self, inputs):
-        vals = np.atleast_2d((inputs/12).astype('float32'))
+        vals = np.atleast_2d((inputs).astype('float32'))
         return self.model(vals)
 
     def train(self, TargetNet):
